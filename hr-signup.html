@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HR / Employer Signup</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>HR / Employer Signup</h2>
+
+    <form id="hrSignupForm">
+      <label for="company">Company Name:</label>
+      <input type="text" id="company" name="company" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <label for="confirm">Confirm Password:</label>
+      <input type="password" id="confirm" name="confirm" required />
+
+      <button type="submit">Sign Up</button>
+
+      <p style="margin-top: 15px;">
+        <a href="hr-login.html">Already have an account? Login</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('hrSignupForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('HR signup submitted (stub)');
+    });
+  </script>
+</body>
+</html>
