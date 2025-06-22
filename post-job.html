@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post a Job</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Post a New Job</h2>
+
+    <form id="jobPostForm">
+      <label for="title">Job Title:</label>
+      <input type="text" id="title" name="title" required />
+
+      <label for="company">Company Name:</label>
+      <input type="text" id="company" name="company" required />
+
+      <label for="location">Location:</label>
+      <input type="text" id="location" name="location" required />
+
+      <label for="description">Job Description:</label>
+      <textarea id="description" name="description" rows="5" required></textarea>
+
+      <label for="requirements">Requirements:</label>
+      <textarea id="requirements" name="requirements" rows="4"></textarea>
+
+      <label for="deadline">Application Deadline:</label>
+      <input type="date" id="deadline" name="deadline" required />
+
+      <button type="submit">Submit Job</button>
+
+      <p style="margin-top: 15px;">
+        <a href="hr-home.html">Back to Dashboard</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('jobPostForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Job posted (stub)');
+      //somewhere backend needs to be connected
+    });
+  </script>
+</body>
+</html>
