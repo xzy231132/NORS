@@ -6,10 +6,9 @@
   <title>Welcome to JobConnect</title>
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  <!-- UPDATED: compatibility SDKs for <script> usage -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <!-- Firebase Initialization -->
   <script defer src="firebase-init.js"></script>
@@ -20,8 +19,8 @@
     <p>Your gateway to job opportunities and talent acquisition.</p>
 
     <div class="button-group">
-      <button onclick="location.href='login.html'">Applicant Portal</button>
-      <button onclick="location.href='login.html'">HR / Employer Portal</button>
+      <button onclick="location.href='applicant-login.html'">Applicant Portal</button>
+      <button onclick="location.href='hr-login.html'">HR / Employer Portal</button>
     </div>
   </div>
   <!-- Demo Firebase read -->
