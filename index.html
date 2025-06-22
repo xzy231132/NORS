@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Welcome to JobConnect</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+
+  <!-- Firebase Initialization -->
+  <script defer src="firebase-init.js"></script>
 </head>
 <body>
   <div class="container">
@@ -16,5 +24,21 @@
       <button onclick="location.href='login.html'">HR / Employer Portal</button>
     </div>
   </div>
+  <!-- Demo Firebase read -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof db !== "undefined") {
+        db.collection("jobs").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log("Job:", doc.id, doc.data());
+          });
+        }).catch((error) => {
+          console.error("Error fetching jobs from Firebase:", error);
+        });
+      } else {
+        console.error("Firebase DB not loaded.");
+      }
+    });
+  </script>
 </body>
 </html>
