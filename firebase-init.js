@@ -9,10 +9,8 @@ const firebaseConfig = {
   storageBucket: "onlinerecruitmentsystem-87364.firebasestorage.app",
   messagingSenderId: "882762844501",
   appId: "1:882762844501:web:91e5957d78db388372c7dc",
-  measurementId: "G-J12S63LX3L"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 const db = firebase.firestore();
