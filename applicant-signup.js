@@ -18,7 +18,8 @@
           await db.collection('applicants').add({
             email: email,
             password: password,
-            name: name
+            name: name,
+            role: "applicant"
           });
           console.log('Applicant successfully recorded to Firestore db');
           location.href = 'applicant-home.html';
