@@ -6,13 +6,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   snapshot.forEach(doc => {
     const user = doc.data();
     const row = document.createElement("tr");
-    // table definition below
+    // table definition below with save/delete functionality
     row.innerHTML = `
       <td><input type="text" value="${user.email}" data-id="${doc.id}" class="email-input"/></td>
       <td><input type="text" value="${user.name}" data-id="${doc.id}" class="name-input"/></td>
       <td>
         <button onclick="saveUser('${doc.id}')">Save</button>
-        <button onclick="deleteUser('${doc.id}')">Delete</button>
+        <button onclick="deleteUser('${doc.id}', '${user.email}')">Delete</button>
       </td>
     `;
     tableBody.appendChild(row);
@@ -27,7 +27,7 @@ async function saveUser(id) {
   alert("User updated.");
 }
 // called by Delete button, prompts for confirmation then pushes to FireStore
-async function deleteUser(id) {
+async function deleteUser(id, email) {
   if (confirm(`Are you sure you want to delete user ${email}?`)) {
     await db.collection("users").doc(id).delete();
     location.reload();
