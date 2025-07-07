@@ -28,7 +28,7 @@ async function saveUser(id) {
 }
 // called by Delete button, prompts for confirmation then pushes to FireStore
 async function deleteUser(id) {
-  if (confirm(`Are you sure you want to delete user (${id})?`)) {
+  if (confirm(`Are you sure you want to delete user ${email}?`)) {
     await db.collection("users").doc(id).delete();
     location.reload();
   }
