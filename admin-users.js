@@ -3,19 +3,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   // select table body then fetch users + loop through each
   const tableBody = document.querySelector("#usersTable tbody");
   const snapshot = await db.collection("users").get();
+  // TODO: this logic should be copied almost directly for HR users when implemented, as
+  // well as admins being able to view other admins, but not delete them 
+  // TODO: MUST add a Firestore rule that only allows write perms if
+  // user's role == 'admin'.
   snapshot.forEach(doc => {
     const user = doc.data();
-    const row = document.createElement("tr");
-    // table definition below with save/delete functionality
-    row.innerHTML = `
-      <td><input type="text" value="${user.email}" data-id="${doc.id}" class="email-input"/></td>
-      <td><input type="text" value="${user.name}" data-id="${doc.id}" class="name-input"/></td>
-      <td>
-        <button onclick="saveUser('${doc.id}')">Save</button>
-        <button onclick="deleteUser('${doc.id}', '${user.email}')">Delete</button>
-      </td>
-    `;
-    tableBody.appendChild(row);
+    if (user.role === "applicant") {
+      const row = document.createElement("tr");
+      // table definition below with save/delete functionality
+      row.innerHTML = `
+        <td><input type="text" value="${user.email}" data-id="${doc.id}" class="email-input"/></td>
+        <td><input type="text" value="${user.name}" data-id="${doc.id}" class="name-input"/></td>
+        <td>
+          <button onclick="saveUser('${doc.id}')">Save</button>
+          <button onclick="deleteUser('${doc.id}', '${user.email}')">Delete</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    }
   });
 });
 // called by Save button, pushes updates to user email and names in Firestore
