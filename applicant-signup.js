@@ -15,7 +15,7 @@
       // TODO: encrypt password in some regard (probably hash it?)
       if (typeof db !== 'undefined') {
         try {
-          await db.collection('applicants').add({
+          await db.collection('users').add({
             email: email,
             password: password,
             name: name,
