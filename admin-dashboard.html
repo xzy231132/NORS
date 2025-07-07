@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - JobConnect</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Admin Dashboard</h2>
+    <p>Welcome, Administrator. What would you like to do?</p>
+
+    <ul>
+      <li><a href="admin-users.html">👥 Manage Users</a></li>
+      <li><a href="admin-posts.html">📝 Moderate Job Posts</a></li>
+      <li><a href="admin-add-content.html">➕ Add New Job</a></li>
+      <li><a href="index.html" onclick="logout()">🚪 Logout</a></li>
+    </ul>
+  </div>
+
+  <script>
+    // Redirect if not logged in 
+    if (localStorage.getItem("adminLoggedIn") !== "true") {
+      window.location.href = "admin-login.html";
+    }
+
+    // Clear admin when logging out
+    function logout() {
+      localStorage.removeItem("adminLoggedIn");
+    }
+  </script>
+</body>
+</html>
