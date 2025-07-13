@@ -4,18 +4,40 @@
   <meta charset="UTF-8">
   <title>User Statistics - Analytics</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <!-- firebase initialization -->
+  <script defer src="firebase-init.js"></script>
+  <script defer src="applicant-login.js"></script>
 </head>
 <body>
   <div class="container">
     <h2>User Statistics</h2>
     <ul>
-      <li>Total registered users: <strong>123</strong></li>
-      <li>Active users: <strong>98</strong></li>
-      <li>Inactive users: <strong>25</strong></li>
+      <li>Total registered users: <strong>Loading...</strong></li>
+      <li>Active users: <strong>Loading...</strong></li>
+      <li>Inactive users: <strong>Loading...</strong></li>
     </ul>
     <p>[Chart showing user registrations by week here]</p>
     <br>
     <a href="analytics-dashboard.html">Back to Analytics Dashboard</a>
   </div>
+  <script>
+  const db = firebase.firestore();
+  async function fetchUserStats() {
+    try {
+      const usersRef = db.collection("users");
+      const totalSnapshot = await usersRef.get();
+      document.getElementById("totalUsers").textContent = totalSnapshot.size;
+      const activeSnapshot = await usersRef.where("status", "==", "active").get();
+      document.getElementById("activeUsers").textContent = activeSnapshot.size;
+      const inactiveSnapshot = await usersRef.where("status", "==", "inactive").get();
+      document.getElementById("inactiveUsers").textContent = inactiveSnapshot.size;
+      } catch (error) {
+        console.error("We ran into an error while fetching user stats:", error);
+      }
+    }
+  </script>
 </body>
 </html>
