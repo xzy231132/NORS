@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search & Filter - Analytics</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Search & Filter Tool</h2>
+    <form>
+      <label for="role">Filter by Role:</label>
+      <select id="role">
+        <option>All</option>
+        <option>Applicant</option>
+        <option>HR</option>
+      </select><br><br>
+
+      <label for="date-range">Date Range:</label>
+      <input type="date"> to <input type="date"><br><br>
+
+      <label for="category">Category:</label>
+      <select id="category">
+        <option>All</option>
+        <option>Engineering</option>
+        <option>Marketing</option>
+        <option>Design</option>
+      </select><br><br>
+
+      <button type="submit">Apply Filters</button>
+    </form>
+    <p>[Filtered results will display here]</p>
+    <br>
+    <a href="analytics-dashboard.html">Back to Analytics Dashboard</a>
+  </div>
+</body>
+</html>
