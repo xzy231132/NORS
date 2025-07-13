@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - JobConnect</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="analytics.js"></script>
 </head>
 <body>
   <div class="container">
@@ -17,8 +19,22 @@
       <li><a href="admin-add-content.html">➕ Add New Job</a></li>
       <li><a href="index.html" onclick="logout()">🚪 Logout</a></li>
     </ul>
-  </div>
+    <hr>
+    <h3>User Registrations Over Time</h3>
+    <canvas id="userRegistrationsChart" width="400" height="200"></canvas>
 
+    <h3>Active vs. Inactive Users</h3>
+    <canvas id="activeUsersChart" width="400" height="200"></canvas>
+
+    <h3>Post Categories</h3>
+    <canvas id="inputCategoriesChart" width="400" height="200"></canvas>
+
+    <h3>Post Trend Over Time</h3>
+    <canvas id="timeTrendChart" width="400" height="200"></canvas>
+
+    <h3>Most Used Features</h3>
+    <canvas id="topFeaturesChart" width="400" height="200"></canvas>
+  </div>
   <script>
     // Redirect if not logged in 
     if (localStorage.getItem("adminLoggedIn") !== "true") {
