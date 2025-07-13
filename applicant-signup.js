@@ -20,6 +20,7 @@
             password: password,
             name: name,
             role: "applicant"
+            status: "active"
           });
           console.log('Applicant successfully recorded to Firestore db');
           location.href = 'applicant-home.html';
