@@ -1,42 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">  
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Applicant Signup</title>
-  <link rel="stylesheet" href="styles.css">
+// script handles the submission of a user to firestore. records name, email, and pwd.
+// uses an async function for syntax simplicity
+    document.getElementById('applicantSignupForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
 
-  <!-- firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <!-- firebase initialization -->
-  <script defer src="firebase-init.js"></script>
-  <script defer src="applicant-signup.js"></script>
+      const email = document.getElementById('email').value;
+      const name = document.getElementById('name').value;
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      if (password !== confirm) {
+        alert("Passwords do not match. Please try again.");
+        return;
+      }
+      // TODO: encrypt password in some regard (probably hash it?)
+      if (typeof db !== 'undefined') {
+        try {
+          await db.collection('users').add({
+            email: email,
+            password: password,
+            name: name,
+              role: "applicant"
+          });
+          console.log('Applicant successfully recorded to Firestore db');
+          location.href = 'applicant-home.html';
+        } catch (err) {
+          console.error('ERROR, unable to add applicant:', err);
+          alert('Submission of user unsuccessful. Please try again!');
+        }
+      } else {
+        console.error('Firestore db is uninitialized.')
+      }
 
-</head>
-<body>
-  <div class="container">
-    <h2>Applicant Signup</h2>
-
-    <form id="applicantSignupForm">
-      <label for="name">Full Name:</label>
-      <input type="text" id="name" name="name" required />
-
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required />
-
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
-
-      <label for="confirm">Confirm Password:</label>
-      <input type="password" id="confirm" name="confirm" required />
-
-      <button type="submit">Sign Up</button>
-
-      <p style="margin-top: 15px;">
-        <a href="applicant-login.html">Already have an account? Login</a>
-      </p>
-    </form>
-  </div>
-</body>
-</html>
+    });
