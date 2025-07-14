@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   if (typeof db === "undefined") return alert("Firestore not initialized.");
   const tableBody = document.querySelector("#postsTable tbody");
-  const snapshot = await db.collection("jobs").get();
+  const snapshot = await db.collection("jobPostRequests").get();
   snapshot.forEach((doc) => {
     const post = doc.data();
     const row = document.createElement("tr");
@@ -21,19 +21,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 async function approvePost(id) {
-  await db.collection("jobs").doc(id).update({ status: "Approved" });
+  await db.collection("jobPostRequests").doc(id).update({ status: "Approved" });
   alert("Post approved.");
   location.reload();
 }
 async function rejectPost(id) {
-  await db.collection("jobs").doc(id).update({ status: "Rejected" });
+  await db.collection("jobPostRequests").doc(id).update({ status: "Rejected" });
   alert("Post rejected.");
   location.reload();
 }
 async function deletePost(id, title) {
   if (confirm(`Are you sure you want to delete the post "${title}" (ID: ${id})?`)) {
     console.log(`Deleting post "${title}" with ID: ${id}`);
-    await db.collection("jobs").doc(id).delete();
+    await db.collection("jobPostRequests").doc(id).delete();
     location.reload();
   }
 }
