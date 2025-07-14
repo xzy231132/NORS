@@ -7,14 +7,16 @@ document.getElementById('adminForm').addEventListener('submit', async function (
   if (typeof db !== 'undefined') {
     try {
       const querySnapshot = await db
-        .collection('admins')
+        .collection('users')
         .where('email', '==', email)
         .where('password', '==', password)
+        .where('role', '==', 'admin')
         .get();
 
       if (!querySnapshot.empty) {
-        console.log('Admin login successful');
-        location.href = 'admin-dashboard.html';
+            console.log('Admin login successful');
+            localStorage.setItem("adminLoggedIn", "true");
+            location.href = 'admin-dashboard.html';
       } else {
         console.error('Invalid admin credentials');
         alert('Invalid email or password. Please try again.');
