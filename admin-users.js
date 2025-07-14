@@ -39,3 +39,55 @@ async function deleteUser(id, email) {
     location.reload();
   }
 }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+import { firebaseConfig } from './firebase-config.mjs';
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const listEl = document.getElementById("accountRequestsList");
+
+async function loadAccountRequests() {
+  const snapshot = await getDocs(collection(db, "accountRequests"));
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${data.fullName}</strong> (${data.email}) - ${data.role}
+      <button onclick="approveRequest('${docSnap.id}', '${data.email}', '${data.password}', '${data.fullName}')">✅ Approve</button>
+      <button onclick="rejectRequest('${docSnap.id}')">❌ Reject</button>
+    `;
+    listEl.appendChild(li);
+  });
+}
+
+window.approveRequest = async (id, email, password, fullName) => {
+  const userRef = doc(db, "users", id);
+  await setDoc(userRef, {
+    fullName,
+    email,
+    password,
+    role: "hr",
+    approved: true
+  });
+  await deleteDoc(doc(db, "accountRequests", id));
+  alert("HR account approved.");
+  location.reload();
+};
+
+window.rejectRequest = async (id) => {
+  await deleteDoc(doc(db, "accountRequests", id));
+  alert("HR account rejected.");
+  location.reload();
+};
+
+loadAccountRequests();
