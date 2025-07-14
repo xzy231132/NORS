@@ -9,9 +9,10 @@ document.getElementById('applicantForm').addEventListener('submit', async functi
   if (typeof db !== 'undefined') {
     try {
       const querySnapshot = await db
-        .collection('applicants')
+        .collection('users')
         .where('email', '==', email)
         .where('password', '==', password)
+        .where('role', '==', 'applicant')
         .get();
       if (!querySnapshot.empty) {
         console.log('Login successful');
