@@ -12,7 +12,7 @@ document.getElementById('hrSignupForm').addEventListener('submit', function (eve
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        return firebase.firestore().collection('users').doc(user.uid).set({
+        return firebase.firestore().collection('accountRequests').doc(user.uid).set({
           fullName: fullName,
           email: user.email,
           role: 'hr',
