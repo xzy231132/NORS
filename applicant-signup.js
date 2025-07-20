@@ -23,8 +23,8 @@
                 });
               })
           .then(() => { 
-              console.log('Applicant successfully recorded to Firestore db');
-              location.href = 'applicant-home.html';
+              console.log('Applicant successfully recorded to Firestore db. Please log in now.');
+              location.href = 'applicant-login.html';
           })
         .catch ((error) => {
           console.error('ERROR, unable to add applicant:', error.message);
