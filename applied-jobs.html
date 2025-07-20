@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Applications</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Firebase v8 SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script defer src="firebase-init.js"></script>
+  <script defer src="applied-jobs.js"></script>
 </head>
 <body>
   <div class="container">
     <h2>Jobs You've Applied To</h2>
-
-    <!-- Placeholder -->
-    <p>You haven't applied to any jobs yet.</p>
-
-    <!-- backend stuff -->
-    <div id="appliedJobsContainer"></div>
-
+    <div id="appliedJobsContainer"></div>Loading your applications...
     <br>
     <a href="applicant-home.html">Back to Dashboard</a>
   </div>
