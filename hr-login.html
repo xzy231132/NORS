@@ -24,12 +24,12 @@
       </p>
     </form>
   </div>
-
-  <script>
-    document.getElementById('hrForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      location.href = 'hr-home.html';
-    });
-  </script>
+    <!-- firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <!-- firebase initialization -->
+    <script defer src="firebase-init.js"></script>
+    <script defer src="hr-login.js"></script>
 </body>
 </html>
