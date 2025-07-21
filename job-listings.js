@@ -33,13 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const resumeUrl = userData.resumeUrl;
             const name = userData.name;
             const email = userData.email;
-            if (!resumeUrl || !name || !email) {
-              alert("Account is missing a resume, name, or email. Please check your resume then contact support if necessary.");
+            if (!name || !email) {
+              alert("Please ensure your account has a name and an email.");
               return;
             }
             await db.collection("applications").add({
               job_id: jobId,
-              resume: resumeUrl,
+              resume: resumeUrl || null,
               status: "Submitted",
               userID: user.uid,
               name: name,
@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
               appliedAt: new Date()
             });
             alert("Application submitted successfully!");
+            
           } catch (error) {
             console.error("Error submitting application:", error);
             alert("Error submitting application. Please try again.");
