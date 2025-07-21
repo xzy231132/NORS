@@ -7,13 +7,24 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Your Applied Jobs</h2>
-    <div id="appliedJobsContainer">
-    </div>
-    <br>
-    <a href="applicant-home.html">Back to Dashboard</a>
-  </div>
+<div class="container">
+  <h2>Available Job Listings</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Company</th>
+        <th>Location</th>
+        <th>Deadline</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="jobListingsTableBody">
+    </tbody>
+  </table>
+  <br>
+  <a href="applicant-home.html">Back to Dashboard</a>
+</div>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
