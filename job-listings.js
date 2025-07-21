@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const tableBody = document.getElementById("jobListingsTableBody");
   firebase.auth().onAuthStateChanged(async function(user) {
     try {
-      const now = new Date();
+      // you have to format the date to a YYYY-MM-DD string to match the data in firestore
+      const today = new Date().toISOString().split('T')[0];
       const querySnapshot = await db.collection("jobPost")
-        .where("deadline", ">", now)
+        .where("deadline", ">=", today)
         .get();
       if (querySnapshot.empty) {
         tableBody.innerHTML = "<tr><td colspan='5'>No job listings available.</td></tr>";
@@ -14,12 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const job = doc.data();
         const jobId = doc.id;
         const row = document.createElement("tr");
-        // very very similar logic to admin-posts.js
         row.innerHTML = `
           <td>${job.title || "No Title Found"}</td>
           <td>${job.company || "Company Unknown"}</td>
           <td>${job.location || "Location Unknown"}</td>
-          <td>${job.deadline.toDate().toLocaleDateString()}</td>
+          <td>${new Date(job.deadline).toLocaleDateString()}</td>
           <td><button data-job-id="${jobId}">Apply Now</button></td>
         `;
         row.querySelector("button").addEventListener("click", async function() {
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const name = userData.name;
             const email = userData.email;
             if (!resumeUrl || !name || !email) {
-              alert("Account is missing a resume, name, or email. Please contact support.");
+              alert("Account is missing a resume, name, or email. Please check your resume then contact support if necessary.");
               return;
             }
             await db.collection("applications").add({
