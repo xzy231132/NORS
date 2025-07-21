@@ -10,14 +10,39 @@
   <div class="container">
     <h2>Manage Your Job Listings</h2>
 
-    <!-- Placeholder-->
-    <p>You haven't posted any jobs yet.</p>
+    <button onclick="toggleForm()">+ Add New Job</button>
 
-    <!--backend listings-->
+    <!-- collapsible form (prev admin-add-content) -->
+    <div id="addJobFormContainer" style="display:none;">
+      <form id="addJobForm">
+        <input  type="text" id="title"        placeholder="Job Title"       required><br><br>
+        <input  type="text" id="company"      placeholder="Company Name"    required><br><br>
+        <input  type="text" id="location"     placeholder="Location"        required><br><br>
+        <input  type="text" id="requirements" placeholder="Requirements"    required><br><br>
+
+        <label for="deadline">Application Deadline:</label>
+        <input  type="date" id="deadline" name="deadline" required><br><br>
+
+        <textarea id="description" placeholder="Job Description" required></textarea><br><br>
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <hr>
+    <!-- list of postings renders here -->
     <div id="jobPostingsContainer"></div>
-
     <br>
     <a href="hr-home.html">Back to Dashboard</a>
   </div>
+
+  <script type="module" src="manage-postings.mjs"></script>
+  <script>
+    /* show/hide for the form */
+    function toggleForm () {
+      const box = document.getElementById('addJobFormContainer');
+      box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+    }
+  </script>
 </body>
 </html>
