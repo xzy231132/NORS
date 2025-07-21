@@ -1,80 +1,91 @@
+// firebase 
 import { auth, db } from "./firebase-config.mjs";
 import {
-  doc, getDoc, getDocs, collection, updateDoc, query, where
+  collection, addDoc, getDocs, deleteDoc, doc, getDoc,
+  query, where
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
+// dom refs
+const listEl = document.getElementById("jobPostingsContainer");
+const formEl = document.getElementById("addJobForm");
+
+// auth and role check
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "index.html";
+  if (!user) return (window.location.href = "index.html");
 
-  const userDoc = await getDoc(doc(db, 'users', user.uid));
+  const userDoc = await getDoc(doc(db, "users", user.uid));
   if (!userDoc.exists()) {
-    alert("User record not found.");
-    return window.location.href = "index.html";
+    alert("User record not found.");           // just-in-case
+    return (window.location.href = "index.html");
   }
 
-  const role = userDoc.data().role;
-  const email = userDoc.data().email;
+  const { role, email } = userDoc.data();
 
-  if (role === "admin") {
-    loadAdminPosts();
-  } else if (role === "hr") {
-    loadHRPosts(email);
-  } else {
+  if (role === "admin")      loadPosts();         // all posts
+  else if (role === "hr")    loadPosts(email);    // only their posts
+  else {
     alert("Access denied.");
-    return window.location.href = "index.html";
+    return (window.location.href = "index.html");
   }
+
+  // handle new hob submission
+  formEl.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const title        = formEl.title.value.trim();
+    const company      = formEl.company.value.trim();
+    const location     = formEl.location.value.trim();
+    const requirements = formEl.requirements.value.trim();
+    const deadline     = formEl.deadline.value;
+    const description  = formEl.description.value.trim();
+
+    await addDoc(collection(db, "jobPosts"), {
+      title, company, location, requirements, deadline, description,
+      postedBy: email,
+      createdAt: new Date()
+    });
+
+    formEl.reset();
+    loadPosts(role === "admin" ? null : email);
+  });
 });
 
-async function loadAdminPosts() {
-  const tableBody = document.querySelector("#postTable tbody");
-  tableBody.innerHTML = "";
+//helpers 
+async function loadPosts (emailFilter = null) {
+  listEl.innerHTML = "";
 
-  const snapshot = await getDocs(collection(db, "jobPosts"));
-  snapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${post.title}</td>
-      <td>${post.status || "Pending"}</td>
-      <td>
-        <button onclick="updateStatus('${docSnap.id}', 'approved')">Approve</button>
-        <button onclick="updateStatus('${docSnap.id}', 'rejected')">Reject</button>
-        <button onclick="flagPost('${docSnap.id}')">Flag</button>
-      </td>
+  const q = emailFilter
+      ? query(collection(db, "jobPosts"), where("postedBy", "==", emailFilter))
+      : collection(db, "jobPosts");
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    listEl.innerHTML = "<p>No job posts found.</p>";
+    return;
+  }
+
+  snap.forEach((docSnap) => {
+    const job = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "job-card";
+    div.innerHTML = `
+      <h3>${job.title}</h3>
+      <p><strong>Company:</strong> ${job.company}</p>
+      <p><strong>Location:</strong> ${job.location}</p>
+      <p><strong>Deadline:</strong> ${job.deadline}</p>
+      <p>${job.description}</p>
+      <button onclick="deleteJob('${docSnap.id}')">Delete</button>
+      <hr>
     `;
-    tableBody.appendChild(row);
+    listEl.appendChild(div);
   });
 }
 
-async function loadHRPosts(email) {
-  const tableBody = document.querySelector("#postTable tbody");
-  tableBody.innerHTML = "";
-
-  const q = query(collection(db, "jobPosts"), where("postedBy", "==", email));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${post.title}</td>
-      <td>${post.status || "Pending"}</td>
-      <td>—</td>
-    `;
-    tableBody.appendChild(row);
-  });
+window.deleteJob = async function (id) {
+  if (confirm("Delete this job post?")) {
+    await deleteDoc(doc(db, "jobPosts", id));
+    loadPosts(); // reload for current user
+  }
 }
-
-// Admin-only actions
-window.updateStatus = async function (id, status) {
-  await updateDoc(doc(db, "jobPosts", id), { status });
-  loadAdminPosts();
-};
-
-window.flagPost = async function (id) {
-  await updateDoc(doc(db, "jobPosts", id), { flagged: true });
-  loadAdminPosts();
-};
