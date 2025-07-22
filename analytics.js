@@ -96,7 +96,7 @@ async function drawActiveUsersChart() {
 // graph 3 post categories breakdown
 async function drawPostCategoriesChart() {
   try {
-    const snapshot = await getDocs(collection(db, "jobPosts"));
+    const snapshot = await getDocs(collection(db, "jobPost"));
     const categoryCounts = {};
 
     snapshot.forEach(doc => {
