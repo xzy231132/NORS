@@ -70,14 +70,15 @@ async function loadAccountRequests() {
   });
 }
 
-window.approveRequest = async (id, email, password, fullName) => {
+window.approveRequest = async (id, email, password, fullName, company) => {
   const userRef = doc(db, "users", id);
   await setDoc(userRef, {
     fullName,
     email,
     password,
     role: "hr",
-    approved: true
+    approved: true,
+    company: company
   });
   await deleteDoc(doc(db, "accountRequests", id));
   alert("HR account approved.");
