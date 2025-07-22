@@ -1,5 +1,5 @@
 import { collection, getDocs, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { db } from './firebase-config.mjs';
+
 
 // having firebase initialization issues, trying it inline
 
