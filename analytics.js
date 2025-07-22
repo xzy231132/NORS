@@ -127,7 +127,7 @@ async function drawPostCategoriesChart() {
 // graph 4 job posts over time
 async function drawPostTrendChart() {
   try {
-    const snapshot = await getDocs(collection(db, "jobPosts"));
+    const snapshot = await getDocs(collection(db, "jobPost"));
     const dateCounts = {};
 
     snapshot.forEach(doc => {
