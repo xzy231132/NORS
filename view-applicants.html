@@ -32,9 +32,12 @@
       applicantsContainer.innerHTML = "";
 
       try {
-        const jobSnapshot = await db.collection("jobs").where("postedBy", "==", user.uid).get();
+            const hrUserDoc = await db.collection("users").doc(user.uid).get();
+            const hrUserData = hrUserDoc.data();
+            const userCompany = hrUserData.company;
+            const jobSnapshot = await db.collection("jobPost").where("company", "==", userCompany).get();
         if (jobSnapshot.empty) {
-          applicantsContainer.innerHTML = "<p>You haven't posted any jobs yet.</p>";
+          applicantsContainer.innerHTML = "<p>Your company hasn't posted any jobs yet.</p>";
           return;
         }
 
