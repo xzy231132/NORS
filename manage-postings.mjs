@@ -10,6 +10,10 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/fi
 const listEl = document.getElementById("jobPostingsContainer");
 const formEl = document.getElementById("addJobForm");
 
+let currentUserRole = null;
+let currentCompany = null;
+let currentEmail = null;
+
 // auth and role check
 onAuthStateChanged(auth, async (user) => {
   if (!user) return (window.location.href = "index.html");
@@ -20,7 +24,10 @@ onAuthStateChanged(auth, async (user) => {
     return (window.location.href = "index.html");
   }
 
-  const { role, email } = userDoc.data();
+  const { role, email, company } = userDoc.data();
+  currentUserRole = role;
+  currentCompany = company || null;
+  currentEmail = email;
 
   if (role === "admin")      loadPosts();         // all posts
   else if (role === "hr")    loadPosts(email);    // only their posts
@@ -29,19 +36,23 @@ onAuthStateChanged(auth, async (user) => {
     return (window.location.href = "index.html");
   }
 
-  // handle new hob submission
+  // handle new job submission
   formEl.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title        = formEl.title.value.trim();
-    const company      = formEl.company.value.trim();
     const location     = formEl.location.value.trim();
     const requirements = formEl.requirements.value.trim();
     const deadline     = formEl.deadline.value;
     const description  = formEl.description.value.trim();
 
     await addDoc(collection(db, "jobPost"), {
-      title, company, location, requirements, deadline, description,
+      title,
+      company: currentCompany || "Unknown Company",
+      location,
+      requirements,
+      deadline,
+      description,
       postedBy: email,
       createdAt: new Date()
     });
@@ -86,6 +97,7 @@ async function loadPosts (emailFilter = null) {
 window.deleteJob = async function (id) {
   if (confirm("Delete this job post?")) {
     await deleteDoc(doc(db, "jobPost", id));
-    loadPosts(); // reload for current user
+    loadPosts(currentUserRole === "admin" ? null : currentEmail);
   }
 }
+
