@@ -1,8 +1,7 @@
 import { collection, getDocs, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-
+import { initializeApp, getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 // having firebase initialization issues, trying it inline
-
+// getting an error about redeclaring db so i'm just triaging it with database instead
 const firebaseConfig = {
   apiKey: "AIzaSyAyMCOePIbciCf0yTBpIuKd1XF33lRJJUY",
   authDomain: "onlinerecruitmentsystem-87364.firebaseapp.com",
@@ -11,14 +10,13 @@ const firebaseConfig = {
   messagingSenderId: "882762844501",
   appId: "1:882762844501:web:91e5957d78db388372c7dc",
 };
-
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+const database = getFirestore(app);
 document.addEventListener("DOMContentLoaded", async () => {
-  if (typeof db === "undefined") return alert("Firestore not initialized.");
+  if (typeof database === "undefined") return alert("Firestore not initialized.");
   // select table body then fetch users + loop through each
   const tableBody = document.querySelector("#usersTable tbody");
+  const snapshot = await getDocs(collection(database, "users"));
   snapshot.forEach(docSnap => {
     const user = docSnap.data();
     if (user.role === "applicant") {
@@ -35,29 +33,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       tableBody.appendChild(row);
     }
   });
+  loadAccountRequests();
 });
-
 // called by Save button, pushes updates to user email and names in Firestore
 // based off the user ID you supply
 window.saveUser = async function(id) {
   const email = document.querySelector(`input.email-input[data-id="${id}"]`).value;
   const name = document.querySelector(`input.name-input[data-id="${id}"]`).value;
-  await updateDoc(doc(db, "users", id), { email, name });
+  await updateDoc(doc(database, "users", id), { email, name });
   alert("User updated.");
 }
-
 // called by Delete button, prompts for confirmation then pushes to FireStore
 window.deleteUser = async function(id, email) {
   if (confirm(`Are you sure you want to delete user ${email}?`)) {
-    await deleteDoc(doc(db, "users", id));
+    await deleteDoc(doc(database, "users", id));
     location.reload();
   }
 }
-
 const listEl = document.getElementById("accountRequestsList");
-
 async function loadAccountRequests() {
-  const snapshot = await getDocs(collection(db, "accountRequests"));
+  const snapshot = await getDocs(collection(database, "accountRequests"));
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
     const li = document.createElement("li");
@@ -69,9 +64,8 @@ async function loadAccountRequests() {
     listEl.appendChild(li);
   });
 }
-
 window.approveRequest = async (id, email, password, fullName, company) => {
-  const userRef = doc(db, "users", id);
+  const userRef = doc(database, "users", id);
   await setDoc(userRef, {
     fullName,
     email,
@@ -80,15 +74,12 @@ window.approveRequest = async (id, email, password, fullName, company) => {
     approved: true,
     company: company
   });
-  await deleteDoc(doc(db, "accountRequests", id));
+  await deleteDoc(doc(database, "accountRequests", id));
   alert("HR account approved.");
   location.reload();
 };
-
 window.rejectRequest = async (id) => {
-  await deleteDoc(doc(db, "accountRequests", id));
+  await deleteDoc(doc(database, "accountRequests", id));
   alert("HR account rejected.");
   location.reload();
 };
-
-loadAccountRequests();
