@@ -4,6 +4,7 @@ document.getElementById('hrSignupForm').addEventListener('submit', function (eve
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
   const confirm = document.getElementById('confirm').value;
+  const company = document.getElementById('company').value.trim();
   if (password !== confirm) {
     alert("Passwords do not match. Please try again.");
     return;
@@ -16,6 +17,7 @@ document.getElementById('hrSignupForm').addEventListener('submit', function (eve
           fullName: fullName,
           email: user.email,
           role: 'hr',
+          company: company,
           createdAt: new Date(),
           status: 'pending'
         });
