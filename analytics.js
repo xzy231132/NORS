@@ -42,6 +42,20 @@ async function drawUserRegistrationsChart() {
           borderColor: 'blue',
           tension: 0.1
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'User Registrations Over Time'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
       }
     });
   } catch (err) {
@@ -68,8 +82,17 @@ async function drawActiveUsersChart() {
         datasets: [{
           label: 'User Activity',
           data: [active, inactive],
-          backgroundColor: ['green', 'gray']
+          backgroundColor: ['#4CAF50', '#9E9E9E']
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Active vs Inactive Users'
+          }
+        }
       }
     });
   } catch (err) {
