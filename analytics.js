@@ -1,12 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import {
-  getFirestore, collection, getDocs
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-import { firebaseConfig } from './firebase-config.mjs';
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { db } from './firebase-config.mjs';
 
 // utility: Format Firestore Timestamp to YYYY-MM-DD
 function formatDate(ts) {
