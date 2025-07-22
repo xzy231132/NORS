@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manage Job Postings</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script defer src="firebase-init.js"></script>
 </head>
 <body>
   <div class="container">
@@ -12,7 +16,6 @@
 
     <button onclick="toggleForm()">+ Add New Job</button>
 
-    <!-- collapsible form (prev admin-add-content) -->
     <div id="addJobFormContainer" style="display:none;">
       <form id="addJobForm">
         <input  type="text" id="title"        placeholder="Job Title"       required><br><br>
@@ -30,19 +33,51 @@
     </div>
 
     <hr>
-    <!-- list of postings renders here -->
     <div id="jobPostingsContainer"></div>
     <br>
-    <a href="hr-home.html">Back to Dashboard</a>
+    <a id="dashboardLink" href="#">Back to Dashboard</a>
   </div>
 
   <script type="module" src="manage-postings.mjs"></script>
   <script>
-    /* show/hide for the form */
-    function toggleForm () {
+    function toggleForm() {
       const box = document.getElementById('addJobFormContainer');
       box.style.display = (box.style.display === 'none') ? 'block' : 'none';
     }
+
+    // Role-based access
+    window.addEventListener("DOMContentLoaded", () => {
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          alert("You must be logged in to access this page.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        try {
+          const userDoc = await db.collection("users").doc(user.uid).get();
+          if (!userDoc.exists) {
+            throw new Error("No user profile found.");
+          }
+
+          const role = userDoc.data().role;
+          const dashboardLink = document.getElementById("dashboardLink");
+
+          if (role === "hr") {
+            dashboardLink.href = "hr-home.html";
+          } else if (role === "admin") {
+            dashboardLink.href = "admin-dashboard.html";
+          } else {
+            alert("Access denied. Applicants cannot manage job postings.");
+            window.location.href = "applicant-home.html";
+          }
+        } catch (err) {
+          console.error("Error checking user role:", err);
+          alert("Error verifying account. Please log in again.");
+          window.location.href = "login.html";
+        }
+      });
+    });
   </script>
 </body>
 </html>
