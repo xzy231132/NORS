@@ -40,7 +40,7 @@ onAuthStateChanged(auth, async (user) => {
     const deadline     = formEl.deadline.value;
     const description  = formEl.description.value.trim();
 
-    await addDoc(collection(db, "jobPosts"), {
+    await addDoc(collection(db, "jobPost"), {
       title, company, location, requirements, deadline, description,
       postedBy: email,
       createdAt: new Date()
