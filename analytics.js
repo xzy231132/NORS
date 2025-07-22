@@ -93,6 +93,76 @@ async function drawActiveUsersChart() {
   }
 }
 
-// run all charts
-drawUserRegistrationsChart();
-drawActiveUsersChart();
+// graph 3 post categories breakdown
+async function drawPostCategoriesChart() {
+  try {
+    const snapshot = await getDocs(collection(db, "jobPosts"));
+    const categoryCounts = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const category = data.category || "Uncategorized";
+      categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+    });
+
+    const labels = Object.keys(categoryCounts);
+    const data = labels.map(label => categoryCounts[label]);
+
+    new Chart(document.getElementById('postCategoriesChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Job Post Categories',
+          data,
+          backgroundColor: 'orange'
+        }]
+      }
+    });
+  } catch (err) {
+    console.error("Error drawing post categories chart:", err);
+  }
+}
+
+// graph 4 job posts over time
+async function drawPostTrendChart() {
+  try {
+    const snapshot = await getDocs(collection(db, "jobPosts"));
+    const dateCounts = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.createdAt) {
+        const date = formatDate(data.createdAt);
+        dateCounts[date] = (dateCounts[date] || 0) + 1;
+      }
+    });
+
+    const labels = Object.keys(dateCounts).sort();
+    const data = labels.map(date => dateCounts[date]);
+
+    new Chart(document.getElementById('postTrendChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Job Posts Over Time',
+          data,
+          fill: false,
+          borderColor: 'green',
+          tension: 0.1
+        }]
+      }
+    });
+  } catch (err) {
+    console.error("Error drawing post trend chart:", err);
+  }
+}
+
+// load graphs 
+window.addEventListener('DOMContentLoaded', () => {
+  drawUserRegistrationsChart();
+  drawActiveUsersChart();
+  drawPostCategoriesChart();
+  drawPostTrendChart();
+});
