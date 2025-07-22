@@ -19,11 +19,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (typeof db === "undefined") return alert("Firestore not initialized.");
   // select table body then fetch users + loop through each
   const tableBody = document.querySelector("#usersTable tbody");
-  const snapshot = await getDocs(collection(db, "users"));
-  // TODO: this logic should be copied almost directly for HR users when implemented, as
-  // well as admins being able to view other admins, but not delete them 
-  // TODO: MUST add a Firestore rule that only allows write perms if
-  // user's role == 'admin'.
   snapshot.forEach(docSnap => {
     const user = docSnap.data();
     if (user.role === "applicant") {
