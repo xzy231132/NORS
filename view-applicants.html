@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>View Applicants</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
   <script defer src="firebase-init.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>Applicants for Your Job Listings</h2>
+    <h2>Applicants for Your Company's Job Listings</h2>
     <div id="applicantsContainer">
       <p>Loading applicants...</p>
     </div>
@@ -21,63 +24,75 @@
   </div>
 
   <script>
-    firebase.auth().onAuthStateChanged(async function(user) {
-      if (!user) {
-        alert("You must be logged in as an HR user to view this page.");
-        window.location.href = "hr-login.html";
-        return;
-      }
+    window.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("applicantsContainer");
 
-      const applicantsContainer = document.getElementById("applicantsContainer");
-      applicantsContainer.innerHTML = "";
-
-      try {
-            const hrUserDoc = await db.collection("users").doc(user.uid).get();
-            const hrUserData = hrUserDoc.data();
-            const userCompany = hrUserData.company;
-            const jobSnapshot = await db.collection("jobPost").where("company", "==", userCompany).get();
-        if (jobSnapshot.empty) {
-          applicantsContainer.innerHTML = "<p>Your company hasn't posted any jobs yet.</p>";
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          alert("Please log in as an HR user.");
+          window.location.href = "hr-login.html";
           return;
         }
 
-        let hasApplicants = false;
-        for (const jobDoc of jobSnapshot.docs) {
-          const jobData = jobDoc.data();
-          const applicationsSnapshot = await db.collection("applications")
-            .where("jobId", "==", jobDoc.id).get();
-
-          if (!applicationsSnapshot.empty) {
-            hasApplicants = true;
-            const jobTitle = jobData.title || "Untitled Job";
-            const jobSection = document.createElement("div");
-            jobSection.innerHTML = `<h3>${jobTitle}</h3>`;
-
-            applicationsSnapshot.forEach(async appDoc => {
-              const appData = appDoc.data();
-              const applicantRef = await db.collection("users").doc(appData.applicantId).get();
-              const applicantData = applicantRef.data();
-              const applicantDiv = document.createElement("div");
-              applicantDiv.innerHTML = `
-                <p><strong>Name:</strong> ${applicantData.name}</p>
-                <p><strong>Email:</strong> ${applicantData.email}</p>
-                <p><a href="${applicantData.resumeUrl}" target="_blank">View Resume</a></p>
-                <hr>
-              `;
-              jobSection.appendChild(applicantDiv);
-            });
-            applicantsContainer.appendChild(jobSection);
+        try {
+          const hrDoc = await db.collection("users").doc(user.uid).get();
+          if (!hrDoc.exists || hrDoc.data().role !== "hr") {
+            throw new Error("Not a valid HR account.");
           }
-        }
 
-        if (!hasApplicants) {
-          applicantsContainer.innerHTML = "<p>No applicants have applied to your jobs yet.</p>";
-        }
+          const company = hrDoc.data().company;
+          if (!company) {
+            container.innerHTML = "<p>No company assigned to your account.</p>";
+            return;
+          }
 
-      } catch (error) {
-        console.error("Failed to load applicants:", error);
-        applicantsContainer.innerHTML = "<p>Error loading applicants. Try again later.</p>";
-      }
+          const jobSnapshot = await db.collection("jobPost")
+            .where("company", "==", company)
+            .get();
+
+          if (jobSnapshot.empty) {
+            container.innerHTML = "<p>Your company hasn't posted any jobs.</p>";
+            return;
+          }
+
+          let hasApplicants = false;
+
+          for (const jobDoc of jobSnapshot.docs) {
+            const jobId = jobDoc.id;
+            const jobTitle = jobDoc.data().title || "Untitled Job";
+
+            const apps = await db.collection("applications")
+              .where("job_id", "==", jobId)
+              .get();
+
+            if (!apps.empty) {
+              hasApplicants = true;
+              const section = document.createElement("div");
+              section.innerHTML = `<h3>${jobTitle}</h3>`;
+
+              apps.forEach(app => {
+                const data = app.data();
+                section.innerHTML += `
+                  <p><strong>Name:</strong> ${data.name || "N/A"}</p>
+                  <p><strong>Email:</strong> ${data.email || "N/A"}</p>
+                  <p><a href="${data.resume || '#'}" target="_blank">View Resume</a></p>
+                  <hr>
+                `;
+              });
+
+              container.appendChild(section);
+            }
+          }
+
+          if (!hasApplicants) {
+            container.innerHTML = "<p>No applicants yet for your company’s jobs.</p>";
+          }
+
+        } catch (err) {
+          console.error("Error:", err);
+          container.innerHTML = "<p>Failed to load applicants.</p>";
+        }
+      });
     });
   </script>
 </body>
