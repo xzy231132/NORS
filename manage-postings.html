@@ -19,7 +19,6 @@
     <div id="addJobFormContainer" style="display:none;">
       <form id="addJobForm">
         <input  type="text" id="title"        placeholder="Job Title"       required><br><br>
-        <input  type="text" id="company"      placeholder="Company Name"    required><br><br>
         <input  type="text" id="location"     placeholder="Location"        required><br><br>
         <input  type="text" id="requirements" placeholder="Requirements"    required><br><br>
 
@@ -56,24 +55,19 @@
 
         try {
           const userDoc = await db.collection("users").doc(user.uid).get();
-          if (!userDoc.exists) {
-            throw new Error("No user profile found.");
-          }
-
+          if (!userDoc.exists) throw new Error("No user profile found.");
           const role = userDoc.data().role;
           const dashboardLink = document.getElementById("dashboardLink");
 
-          if (role === "hr") {
-            dashboardLink.href = "hr-home.html";
-          } else if (role === "admin") {
-            dashboardLink.href = "admin-dashboard.html";
-          } else {
-            alert("Access denied. Applicants cannot manage job postings.");
-            window.location.href = "applicant-home.html";
+          dashboardLink.href = (role === "hr") ? "hr-home.html" :
+                               (role === "admin") ? "admin-dashboard.html" : "index.html";
+
+          if (role !== "hr" && role !== "admin") {
+            alert("Access denied.");
+            window.location.href = "index.html";
           }
         } catch (err) {
           console.error("Error checking user role:", err);
-          alert("Error verifying account. Please log in again.");
           window.location.href = "login.html";
         }
       });
