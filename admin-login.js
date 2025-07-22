@@ -4,28 +4,26 @@ document.getElementById('adminForm').addEventListener('submit', async function (
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  if (typeof db !== 'undefined') {
-    try {
-      const querySnapshot = await db
-        .collection('users')
-        .where('email', '==', email)
-        .where('password', '==', password)
-        .where('role', '==', 'admin')
-        .get();
+  try {
+    // Sign in using Firebase Auth
+    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    const user = userCredential.user;
 
-      if (!querySnapshot.empty) {
-            console.log('Admin login successful');
-            localStorage.setItem("adminLoggedIn", "true");
-            location.href = 'admin-dashboard.html';
-      } else {
-        console.error('Invalid admin credentials');
-        alert('Invalid email or password. Please try again.');
-      }
-    } catch (err) {
-      console.error('ERROR during admin login:', err);
-      alert('Login failed. Please try again.');
+    // Check if this user has admin privileges in Firestore
+    const doc = await db.collection('users').doc(user.uid).get();
+
+    if (doc.exists && doc.data().role === 'admin') {
+      console.log('Admin login successful');
+      localStorage.setItem('adminLoggedIn', 'true');
+      location.href = 'admin-dashboard.html';
+    } else {
+      console.error('Not an admin');
+      alert('You do not have admin privileges.');
+      await firebase.auth().signOut(); // Logout unauthorized user
     }
-  } else {
-    console.error('Firestore db is uninitialized.');
+
+  } catch (err) {
+    console.error('ERROR during admin login:', err.message);
+    alert('Invalid email or password. Please try again.');
   }
 });
