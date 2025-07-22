@@ -40,7 +40,7 @@ onAuthStateChanged(auth, async (user) => {
     const deadline     = formEl.deadline.value;
     const description  = formEl.description.value.trim();
 
-    await addDoc(collection(db, "jobPosts"), {
+    await addDoc(collection(db, "jobPost"), {
       title, company, location, requirements, deadline, description,
       postedBy: email,
       createdAt: new Date()
@@ -56,8 +56,8 @@ async function loadPosts (emailFilter = null) {
   listEl.innerHTML = "";
 
   const q = emailFilter
-      ? query(collection(db, "jobPosts"), where("postedBy", "==", emailFilter))
-      : collection(db, "jobPosts");
+      ? query(collection(db, "jobPost"), where("postedBy", "==", emailFilter))
+      : collection(db, "jobPost");
 
   const snap = await getDocs(q);
 
@@ -85,7 +85,7 @@ async function loadPosts (emailFilter = null) {
 
 window.deleteJob = async function (id) {
   if (confirm("Delete this job post?")) {
-    await deleteDoc(doc(db, "jobPosts", id));
+    await deleteDoc(doc(db, "jobPost", id));
     loadPosts(); // reload for current user
   }
 }

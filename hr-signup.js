@@ -1,37 +1,34 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-import { firebaseConfig } from './firebase-config.mjs'; // adjust if needed
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-document.getElementById("hrSignupForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const fullName = document.getElementById("fullName").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim(); // Ideally hash or store securely
-
-  try {
-    await addDoc(collection(db, "accountRequests"), {
-      fullName,
-      email,
-      password,
-      role: "hr",
-      status: "pending",
-      timestamp: serverTimestamp()
-    });
-
-    alert("Signup submitted. Please wait for admin approval.");
-    window.location.href = "index.html"; // or login page
-  } catch (error) {
-    console.error("Error submitting signup:", error);
-    alert("Signup failed. Please try again.");
+document.getElementById('hrSignupForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const confirm = document.getElementById('confirm').value;
+  const company = document.getElementById('company').value.trim();
+  if (password !== confirm) {
+    alert("Passwords do not match. Please try again.");
+    return;
+  }
+  if (typeof db !== 'undefined') {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        return firebase.firestore().collection('accountRequests').doc(user.uid).set({
+          fullName: fullName,
+          email: user.email,
+          role: 'hr',
+          company: company,
+          createdAt: new Date(),
+          status: 'pending'
+        });
+      })
+      .then(() => {
+        alert('Account request created. Please wait for admin approval.');
+        window.location.href = 'index.html';
+      })
+      .catch((error) => {
+        console.error('ERROR, signup failed:', error.message);
+        alert('Signup failed. Please try again!');
+      });
   }
 });
