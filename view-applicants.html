@@ -5,19 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>View Applicants</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script defer src="firebase-init.js"></script>
 </head>
 <body>
   <div class="container">
     <h2>Applicants for Your Job Listings</h2>
-
-    <!--Placeholder-->
-    <p>No applicants yet.</p>
-
-    <!-- actual entries -->
-    <div id="applicantsContainer"></div>
-
+    <div id="applicantsContainer">
+      <p>Loading applicants...</p>
+    </div>
     <br>
     <a href="hr-home.html">Back to Dashboard</a>
   </div>
+
+  <script>
+    firebase.auth().onAuthStateChanged(async function(user) {
+      if (!user) {
+        alert("You must be logged in as an HR user to view this page.");
+        window.location.href = "hr-login.html";
+        return;
+      }
+
+      const applicantsContainer = document.getElementById("applicantsContainer");
+      applicantsContainer.innerHTML = "";
+
+      try {
+        const jobSnapshot = await db.collection("jobs").where("postedBy", "==", user.uid).get();
+        if (jobSnapshot.empty) {
+          applicantsContainer.innerHTML = "<p>You haven't posted any jobs yet.</p>";
+          return;
+        }
+
+        let hasApplicants = false;
+        for (const jobDoc of jobSnapshot.docs) {
+          const jobData = jobDoc.data();
+          const applicationsSnapshot = await db.collection("applications")
+            .where("jobId", "==", jobDoc.id).get();
+
+          if (!applicationsSnapshot.empty) {
+            hasApplicants = true;
+            const jobTitle = jobData.title || "Untitled Job";
+            const jobSection = document.createElement("div");
+            jobSection.innerHTML = `<h3>${jobTitle}</h3>`;
+
+            applicationsSnapshot.forEach(async appDoc => {
+              const appData = appDoc.data();
+              const applicantRef = await db.collection("users").doc(appData.applicantId).get();
+              const applicantData = applicantRef.data();
+              const applicantDiv = document.createElement("div");
+              applicantDiv.innerHTML = `
+                <p><strong>Name:</strong> ${applicantData.name}</p>
+                <p><strong>Email:</strong> ${applicantData.email}</p>
+                <p><a href="${applicantData.resumeUrl}" target="_blank">View Resume</a></p>
+                <hr>
+              `;
+              jobSection.appendChild(applicantDiv);
+            });
+            applicantsContainer.appendChild(jobSection);
+          }
+        }
+
+        if (!hasApplicants) {
+          applicantsContainer.innerHTML = "<p>No applicants have applied to your jobs yet.</p>";
+        }
+
+      } catch (error) {
+        console.error("Failed to load applicants:", error);
+        applicantsContainer.innerHTML = "<p>Error loading applicants. Try again later.</p>";
+      }
+    });
+  </script>
 </body>
 </html>
