@@ -18,13 +18,13 @@
 
     <div id="addJobFormContainer" style="display:none;">
       <form id="addJobForm">
-        <input  type="text" id="title"        placeholder="Job Title"       required><br><br>
-        <input  type="text" id="company"      placeholder="Company Name"    required><br><br>
-        <input  type="text" id="location"     placeholder="Location"        required><br><br>
-        <input  type="text" id="requirements" placeholder="Requirements"    required><br><br>
+        <input type="text" id="title" placeholder="Job Title" required><br><br>
+        <input type="text" id="company" placeholder="Company Name" readonly><br><br>
+        <input type="text" id="location" placeholder="Location" required><br><br>
+        <input type="text" id="requirements" placeholder="Requirements" required><br><br>
 
         <label for="deadline">Application Deadline:</label>
-        <input  type="date" id="deadline" name="deadline" required><br><br>
+        <input type="date" id="deadline" name="deadline" required><br><br>
 
         <textarea id="description" placeholder="Job Description" required></textarea><br><br>
 
@@ -45,7 +45,7 @@
       box.style.display = (box.style.display === 'none') ? 'block' : 'none';
     }
 
-    // Role-based access
+    // Role-based access and HR company auto-fill
     window.addEventListener("DOMContentLoaded", () => {
       firebase.auth().onAuthStateChanged(async (user) => {
         if (!user) {
@@ -63,8 +63,18 @@
           const role = userDoc.data().role;
           const dashboardLink = document.getElementById("dashboardLink");
 
+          // Set dashboard link based on role
           if (role === "hr") {
             dashboardLink.href = "hr-home.html";
+
+            // Auto-fill company name for HR
+            const companyField = document.getElementById("company");
+            if (userDoc.data().company) {
+              companyField.value = userDoc.data().company;
+            } else {
+              companyField.value = "Your Company Name";
+            }
+
           } else if (role === "admin") {
             dashboardLink.href = "admin-dashboard.html";
           } else {

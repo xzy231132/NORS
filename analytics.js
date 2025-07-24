@@ -1,12 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import {
-  getFirestore, collection, getDocs
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-import { firebaseConfig } from './firebase-config.mjs';
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { db } from './firebase-config.mjs';
 
 // utility: Format Firestore Timestamp to YYYY-MM-DD
 function formatDate(ts) {
@@ -42,6 +35,20 @@ async function drawUserRegistrationsChart() {
           borderColor: 'blue',
           tension: 0.1
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'User Registrations Over Time'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
       }
     });
   } catch (err) {
@@ -68,8 +75,17 @@ async function drawActiveUsersChart() {
         datasets: [{
           label: 'User Activity',
           data: [active, inactive],
-          backgroundColor: ['green', 'gray']
+          backgroundColor: ['#4CAF50', '#9E9E9E']
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Active vs Inactive Users'
+          }
+        }
       }
     });
   } catch (err) {
@@ -80,7 +96,7 @@ async function drawActiveUsersChart() {
 // graph 3 post categories breakdown
 async function drawPostCategoriesChart() {
   try {
-    const snapshot = await getDocs(collection(db, "jobPosts"));
+    const snapshot = await getDocs(collection(db, "jobPost"));
     const categoryCounts = {};
 
     snapshot.forEach(doc => {
@@ -111,7 +127,7 @@ async function drawPostCategoriesChart() {
 // graph 4 job posts over time
 async function drawPostTrendChart() {
   try {
-    const snapshot = await getDocs(collection(db, "jobPosts"));
+    const snapshot = await getDocs(collection(db, "jobPost"));
     const dateCounts = {};
 
     snapshot.forEach(doc => {
